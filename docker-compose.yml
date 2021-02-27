@@ -1,0 +1,8 @@
+version: "2"
+
+services:
+  recorder:
+    build:
+      context: ./recorder
+    volumes:
+      - ./recorder:/usr/src/app

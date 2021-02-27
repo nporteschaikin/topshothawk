@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@onflow/sdk": "0.0.44"
+  }
+}
