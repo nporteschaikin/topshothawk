@@ -14,6 +14,11 @@ module Migrator
       connection.exec(stmt, params)
     end
 
+    def run_command(*args)
+      logger.info(args.join(" "))
+      system(args.join(" "))
+    end
+
     def read_file(path)
       File.open(path).readlines.join("\n")
     end

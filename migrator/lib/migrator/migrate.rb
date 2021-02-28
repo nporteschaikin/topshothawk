@@ -11,6 +11,7 @@ module Migrator
     def run
       create_schema_migrations
       run_migrations
+      dump_schema
     end
 
     private
@@ -27,10 +28,10 @@ module Migrator
             execute_up(entry)
           else
             execute_down(entry)
-
-            # for now, run one down at a time.
-            break
           end
+
+          # for now, only let one `down` run at a time.
+          break if direction == DOWN
         end
       end
     end
@@ -55,6 +56,10 @@ module Migrator
           [version],
         )
       end
+    end
+
+    def dump_schema
+      run_command("pg_dump", ENV["DATABASE_URL"], "--schema-only", ">", Migrator::SCHEMA_PATH)
     end
 
     def existing_versions
