@@ -2,6 +2,7 @@
   "dependencies": {
     "@onflow/interaction": "0.0.11",
     "@onflow/sdk": "0.0.45-alpha.9",
-    "@onflow/types": "0.0.4"
+    "@onflow/types": "0.0.4",
+    "pg": "^8.5.1"
   }
 }

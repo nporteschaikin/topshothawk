@@ -1,15 +1,12 @@
+const pg = require('./pg');
+
 const sdk = require('@onflow/sdk');
 const types = require('@onflow/types');
 const interaction = require('@onflow/interaction');
 
-const TOPSHOT_NODE = 'https://access-mainnet-beta.onflow.org';
-const TOPSHOT_ADDRESS = '0b2a3299cc857e29';
-const TOPSHOT_MARKET_ADDRESS = 'c1e4f4f4c4257510';
-const TOPSHOT_EVENT_TYPE = 'A.c1e4f4f4c4257510.Market.MomentPurchased';
-
 const TOPSHOT_SALE_MOMENT_SCRIPT = `
-import TopShot from 0x${TOPSHOT_ADDRESS}
-import Market from 0x${TOPSHOT_MARKET_ADDRESS}
+import TopShot from 0x${process.env.TOPSHOT_ADDRESS}
+import Market from 0x${process.env.TOPSHOT_MARKET_ADDRESS}
 
 pub struct SaleMoment {
   pub var id: UInt64
@@ -44,7 +41,7 @@ pub fun main(seller: Address, momentID: UInt64): SaleMoment {
 `;
 
 const send = async function(req) {
-  return await sdk.send(req, {node: TOPSHOT_NODE});
+  return await sdk.send(req, {node: process.env.TOPSHOT_NODE});
 };
 
 const fetchMomentAtParentBlock = async function(event, block) {
@@ -81,25 +78,28 @@ const fetchLatestBlock = async function() {
 
 const fetchEventsAtBlock = async function(block) {
   const interaction = await sdk.build([
-    sdk.getEvents(TOPSHOT_EVENT_TYPE, block.height - 5000, block.height),
+    sdk.getEvents(
+      process.env.TOPSHOT_MOMENT_PURCHASED_EVENT_TYPE,
+      block.height - 5000,
+      block.height,
+    ),
   ]);
 
   const response = await send(interaction);
   return response.events;
 };
 
-const processEvent = async function(event, block) {
-  const moment = await fetchMomentAtParentBlock(event, block);
-  console.log(moment);
+const processMoment = function(event, block) {
+  console.log('process moment!');
 };
 
 const run = async function() {
   const block = await fetchLatestBlock();
   const events = await fetchEventsAtBlock(block);
 
-  // await events.forEach(function(event) {
-  await [events[0]].forEach(function(event) {
-    processEvent(event, block);
+  events.forEach(async function(event) {
+    const moment = await fetchMomentAtParentBlock(event, block);
+    processMoment(moment, event);
   });
 };
 

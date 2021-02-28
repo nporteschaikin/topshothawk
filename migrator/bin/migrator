@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+$:.unshift File.expand_path("../lib", File.dirname(__FILE__))
+
+require "migrator"
+
+cli = Migrator::CLI.new(ARGV)
+cli.run
