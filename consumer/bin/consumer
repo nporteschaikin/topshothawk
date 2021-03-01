@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const util = require("./../src/helpers/util")
+const util = require('./../src/helpers/util');
 
 const run = async function(fn) {
   let shutdown = false;
@@ -18,19 +18,23 @@ const run = async function(fn) {
   }
 };
 
-const args = process.argv.slice(2)
+const args = process.argv.slice(2);
 
 switch (args[0]) {
-  case "listen": {
-    const listener = require("./../src/listener")
+  case 'listen': {
+    const listener = require('./../src/listener');
 
-    util.log.info("🔥 Starting listener...")
-    return run(listener)
+    util.log.info('🔥 Starting listener...');
+    run(listener);
+
+    break;
   }
-  case "record": {
-    const recorder = require("./../src/recorder")
+  case 'record': {
+    const recorder = require('./../src/recorder');
 
-    util.log.info("🔥 Starting recorder...")
-    return run(recorder)
+    util.log.info('🔥 Starting recorder...');
+    run(recorder);
+
+    break;
   }
 }
