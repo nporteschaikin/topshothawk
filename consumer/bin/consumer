@@ -23,10 +23,14 @@ const args = process.argv.slice(2)
 switch (args[0]) {
   case "listen": {
     const listener = require("./../src/listener")
+
+    util.log.info("🔥 Starting listener...")
     return run(listener)
   }
   case "record": {
     const recorder = require("./../src/recorder")
+
+    util.log.info("🔥 Starting recorder...")
     return run(recorder)
   }
 }
