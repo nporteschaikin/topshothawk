@@ -10,13 +10,19 @@ const fetchLatestBlock = async function() {
   return response.block;
 };
 
+const lpush = async function(block) {
+  return new Promise(function(resolve) {
+    redis.lpush(process.env.REDIS_QUEUE, JSON.stringify(block), resolve);
+  });
+};
+
 const runOnce = async function() {
   util.log.info(`Fetching latest block...`);
 
   const block = await fetchLatestBlock();
-  await redis.lpush(process.env.REDIS_QUEUE, JSON.stringify(block));
+  await lpush(JSON.stringify(block));
 
-  util.log.info(`Pushed block ${block.id} to Redis queue.`);
+  util.log.info(`✍️  Pushed block ${block.id} to Redis queue.`);
 };
 
 const run = async function() {
