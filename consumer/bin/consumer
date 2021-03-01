@@ -1,0 +1,32 @@
+#!/usr/bin/env node
+
+const util = require("./../src/helpers/util")
+
+const run = async function(fn) {
+  let shutdown = false;
+
+  process.on('SIGINT', function() {
+    util.log.info('Shutting down...');
+    shutdown = true;
+  });
+
+  while (!shutdown) {
+    await fn();
+
+    util.log.info('Sleeping...');
+    await util.sleep(500);
+  }
+};
+
+const args = process.argv.slice(2)
+
+switch (args[0]) {
+  case "listen": {
+    const listener = require("./../src/listener")
+    return run(listener)
+  }
+  case "record": {
+    const recorder = require("./../src/recorder")
+    return run(recorder)
+  }
+}

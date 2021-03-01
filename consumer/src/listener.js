@@ -1,5 +1,5 @@
-const util = require('./util');
-const redis = require('./redis');
+const util = require('./helpers/util');
+const redis = require('./helpers/redis');
 
 const sdk = require('@onflow/sdk');
 
@@ -16,7 +16,7 @@ const lpush = async function(block) {
   });
 };
 
-const runOnce = async function() {
+module.exports = async function() {
   util.log.info(`Fetching latest block...`);
 
   const block = await fetchLatestBlock();
@@ -24,25 +24,3 @@ const runOnce = async function() {
 
   util.log.info(`✍️  Pushed block ${block.id} to Redis queue.`);
 };
-
-const run = async function() {
-  let shutdown = false;
-
-  process.on('SIGINT', function() {
-    util.log.info('Shutting down...');
-    shutdown = true;
-  });
-
-  util.log.info('👋 Howdy!');
-
-  while (!shutdown) {
-    await runOnce();
-
-    util.log.info('Sleeping...');
-    await util.sleep(500);
-  }
-
-  util.log.info('👋 Bye!');
-};
-
-run();

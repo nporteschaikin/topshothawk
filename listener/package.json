@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@onflow/sdk": "0.0.45-alpha.9",
-    "redis": "^3.0.2"
-  }
-}

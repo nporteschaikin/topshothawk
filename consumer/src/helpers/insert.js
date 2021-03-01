@@ -1,5 +1,9 @@
-const pg = require('./pg');
 const util = require('./util');
+const pg = require('pg');
+
+const pool = new pg.Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
 const statement = `
   INSERT INTO moments (
@@ -126,7 +130,7 @@ const insert = async function(moment) {
     momentFieldValue(moment, 'setName'), // setName
   ];
 
-  await pg.query(statement, params);
+  await pool.query(statement, params);
 
   util.log.info(`✍️  Wrote moment ${momentFieldValue(moment, 'id')}.`);
 };

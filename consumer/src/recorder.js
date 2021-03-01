@@ -1,6 +1,6 @@
-const insert = require('./insert');
-const redis = require('./redis');
-const util = require('./util');
+const insert = require('./helpers/insert');
+const redis = require('./helpers/redis');
+const util = require('./helpers/util');
 
 const sdk = require('@onflow/sdk');
 const types = require('@onflow/types');
@@ -115,7 +115,7 @@ const runOnce = async function() {
   }
 };
 
-const run = async function() {
+module.exports = async function() {
   let shutdown = false;
 
   process.on('SIGINT', function() {
@@ -134,5 +134,3 @@ const run = async function() {
 
   util.log.info('👋 Bye!');
 };
-
-run();

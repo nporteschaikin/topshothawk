@@ -7,9 +7,10 @@ volumes:
 services:
   listener:
     build:
-      context: ./listener
+      context: ./consumer
+    command: listen
     volumes:
-      - ./listener:/usr/src/app
+      - ./consumer:/usr/src/app
     env_file:
       - .env
     depends_on:
@@ -17,9 +18,10 @@ services:
 
   recorder:
     build:
-      context: ./recorder
+      context: ./consumer
+    command: record
     volumes:
-      - ./recorder:/usr/src/app
+      - ./consumer:/usr/src/app
     env_file:
       - .env
     depends_on:
