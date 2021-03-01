@@ -1,4 +1,6 @@
-const pg = require('./pg');
+const insert = require('./insert');
+const redis = require('./redis');
+const util = require('./util');
 
 const sdk = require('@onflow/sdk');
 const types = require('@onflow/types');
@@ -28,21 +30,25 @@ pub struct SaleMoment {
   }
 }
 
-pub fun main(seller: Address, momentID: UInt64): SaleMoment {
+pub fun main(seller: Address, momentID: UInt64): SaleMoment? {
   let acct = getAccount(seller)
   let collection =
     acct.getCapability(/public/topshotSaleCollection)!.borrow<&{Market.SalePublic}>() ?? panic("Could not borrow capability from public collection")
 
-  return SaleMoment(
-    moment: collection.borrowMoment(id: momentID)!,
-    price:  collection.getPrice(tokenID: momentID)!
-  )
+  //return SaleMoment(
+    //moment: collection.borrowMoment(id: momentID)!,
+    //price:  collection.getPrice(tokenID: momentID)!
+  //)
+  if (collection.getIDs().length > 0){
+    return SaleMoment(
+      moment: collection.borrowMoment(id: collection.getIDs()[0])!,
+      price:  collection.getPrice(tokenID: collection.getIDs()[0])!
+    )
+  } else {
+    return nil
+  }
 }
 `;
-
-const send = async function(req) {
-  return await sdk.send(req, {node: process.env.TOPSHOT_NODE});
-};
 
 const fetchMomentAtParentBlock = async function(event, block) {
   const payload = event.payload;
@@ -52,7 +58,7 @@ const fetchMomentAtParentBlock = async function(event, block) {
 
   const interaction = await sdk.build([
     sdk.script(TOPSHOT_SALE_MOMENT_SCRIPT),
-    sdk.atBlockId(block.parentId),
+    //sdk.atBlockId(block.parentId),
     sdk.args([
       sdk.arg(seller.value.value.value, types.Address),
       sdk.arg(parseInt(moment.value.value), types.UInt64),
@@ -64,43 +70,69 @@ const fetchMomentAtParentBlock = async function(event, block) {
     sdk.resolveParams,
   ]);
 
-  const response = await send(pipe);
+  const response = await util.send(pipe);
+  const data = response.encodedData;
+  const body = data.value;
 
-  console.log(response);
-};
-
-const fetchLatestBlock = async function() {
-  const interaction = await sdk.build([sdk.getLatestBlock()]);
-
-  const response = await send(interaction);
-  return response.block;
+  return body === null ? null : body.value;
 };
 
 const fetchEventsAtBlock = async function(block) {
   const interaction = await sdk.build([
     sdk.getEvents(
       process.env.TOPSHOT_MOMENT_PURCHASED_EVENT_TYPE,
-      block.height - 5000,
+      block.height - 10,
       block.height,
     ),
   ]);
 
-  const response = await send(interaction);
+  const response = await util.send(interaction);
   return response.events;
 };
 
-const processMoment = function(event, block) {
-  console.log('process moment!');
+const popBlock = function() {
+  return new Promise(function(resolve) {
+    redis.brpop(process.env.REDIS_QUEUE, 0, function(err, result) {
+      resolve(result === null ? null : JSON.parse(result[1]));
+    });
+  });
+};
+
+const runOnce = async function() {
+  const block = await popBlock();
+
+  if (block !== null) {
+    util.log.info(`Handling events for block ${block.id}...`);
+
+    const events = await fetchEventsAtBlock(block);
+    events.forEach(async function(event) {
+      const moment = await fetchMomentAtParentBlock(event, block);
+
+      if (moment !== null) {
+        insert(moment);
+      }
+    });
+  }
 };
 
 const run = async function() {
-  const block = await fetchLatestBlock();
-  const events = await fetchEventsAtBlock(block);
+  let shutdown = false;
 
-  events.forEach(async function(event) {
-    const moment = await fetchMomentAtParentBlock(event, block);
-    processMoment(moment, event);
+  process.on('SIGINT', function() {
+    util.log.info('Shutting down...');
+    shutdown = true;
   });
+
+  util.log.info('👋 Howdy!');
+
+  while (!shutdown) {
+    await runOnce();
+
+    util.log.info('Sleeping...');
+    await util.sleep(1000);
+  }
+
+  util.log.info('👋 Bye!');
 };
 
 run();

@@ -25,17 +25,48 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE public.moments (
-    id bigint NOT NULL
+    id bigint NOT NULL,
+    externalid character varying,
+    serialnumber character varying,
+    price double precision,
+    playerfullname character varying,
+    playerfirstname character varying,
+    playerlastname character varying,
+    playerbirthdate date,
+    playerbirthplace character varying,
+    playerjerseynumber character varying,
+    playerdraftteam character varying,
+    playerdraftyear bigint,
+    playerdraftselection integer,
+    playerdraftround integer,
+    playerteamatmomentnbaid bigint,
+    playerteamatmomentname character varying,
+    playerprimaryposition character varying,
+    playerposition character varying,
+    playerheightinches integer,
+    playerweightpounds integer,
+    playeryearsexperience integer,
+    playnbaseason character varying,
+    playgametime timestamp without time zone,
+    playcategory character varying,
+    playtype character varying,
+    playhometeamname character varying,
+    playawayteamname character varying,
+    playhometeamscore bigint,
+    playawayteamscore bigint,
+    setid bigint,
+    setname character varying,
+    createdat timestamp without time zone
 );
 
 
 ALTER TABLE public.moments OWNER TO postgres;
 
 --
--- Name: moments_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: momentsidseq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE public.moments_id_seq
+CREATE SEQUENCE public.momentsidseq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -43,13 +74,13 @@ CREATE SEQUENCE public.moments_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.moments_id_seq OWNER TO postgres;
+ALTER TABLE public.momentsidseq OWNER TO postgres;
 
 --
--- Name: moments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: momentsidseq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE public.moments_id_seq OWNED BY public.moments.id;
+ALTER SEQUENCE public.momentsidseq OWNED BY public.moments.id;
 
 
 --
@@ -64,11 +95,25 @@ CREATE TABLE public.schema_migrations (
 ALTER TABLE public.schema_migrations OWNER TO postgres;
 
 --
+-- Name: moments id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.moments ALTER COLUMN id SET DEFAULT nextval('public.momentsidseq'::regclass);
+
+
+--
 -- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: indexmomentsonexternalid; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX indexmomentsonexternalid ON public.moments USING btree (externalid);
 
 
 --
