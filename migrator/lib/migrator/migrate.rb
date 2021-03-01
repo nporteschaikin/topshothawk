@@ -20,7 +20,7 @@ module Migrator
       Dir.entries(Migrator::MIGRATIONS_DIR).each do |entry|
         path = File.join(Migrator::MIGRATIONS_DIR, entry)
 
-        if File.directory?(path) && entry.to_i > 0 && # dumb check to ensure the directory is a number
+        if File.directory?(path) && entry.to_i > 0 # dumb check to ensure the directory is a number
           direction = DIRECTIONS.include?(args.first) ? args.first : DEFAULT_DIRECTION
 
           case direction
