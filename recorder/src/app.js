@@ -129,7 +129,7 @@ const run = async function() {
     await runOnce();
 
     util.log.info('Sleeping...');
-    await util.sleep(1000);
+    await util.sleep(5000);
   }
 
   util.log.info('👋 Bye!');
