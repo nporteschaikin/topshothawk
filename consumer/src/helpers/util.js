@@ -14,7 +14,7 @@ module.exports.send = send;
 
 const log = {
   info: function(str) {
-    console.log(str);
+    console.info(str);
   },
 };
 module.exports.log = log;

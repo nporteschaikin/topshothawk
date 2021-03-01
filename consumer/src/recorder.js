@@ -90,7 +90,7 @@ const fetchEventsAtBlock = async function(block) {
   return response.events;
 };
 
-const popBlock = function() {
+const brpop = function() {
   return new Promise(function(resolve) {
     redis.brpop(process.env.REDIS_QUEUE, 0, function(err, result) {
       resolve(result === null ? null : JSON.parse(result[1]));
@@ -98,8 +98,8 @@ const popBlock = function() {
   });
 };
 
-const runOnce = async function() {
-  const block = await popBlock();
+module.exports = async function() {
+  const block = await brpop();
 
   if (block !== null) {
     util.log.info(`Handling events for block ${block.id}...`);
@@ -113,24 +113,4 @@ const runOnce = async function() {
       }
     });
   }
-};
-
-module.exports = async function() {
-  let shutdown = false;
-
-  process.on('SIGINT', function() {
-    util.log.info('Shutting down...');
-    shutdown = true;
-  });
-
-  util.log.info('👋 Howdy!');
-
-  while (!shutdown) {
-    await runOnce();
-
-    util.log.info('Sleeping...');
-    await util.sleep(5000);
-  }
-
-  util.log.info('👋 Bye!');
 };

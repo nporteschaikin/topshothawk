@@ -2,7 +2,20 @@
 
 const util = require('./../src/helpers/util');
 
-const run = async function(fn) {
+// Temporary hack to silence warnings.
+const silenceDeprecation = function (fn) {
+  return function (msg) {
+    if (msg.includes("Deprecation Notice")) {
+      return;
+    }
+
+    return fn(msg);
+  }
+}
+console.warn = silenceDeprecation(console.warn)
+console.error = silenceDeprecation(console.error)
+
+const run = async function(fn, sleep) {
   let shutdown = false;
 
   process.on('SIGINT', function() {
@@ -14,7 +27,7 @@ const run = async function(fn) {
     await fn();
 
     util.log.info('Sleeping...');
-    await util.sleep(500);
+    await util.sleep(sleep);
   }
 };
 
@@ -25,7 +38,7 @@ switch (args[0]) {
     const listener = require('./../src/listener');
 
     util.log.info('🔥 Starting listener...');
-    run(listener);
+    run(listener, 500);
 
     break;
   }
@@ -33,7 +46,7 @@ switch (args[0]) {
     const recorder = require('./../src/recorder');
 
     util.log.info('🔥 Starting recorder...');
-    run(recorder);
+    run(recorder, 2000);
 
     break;
   }
