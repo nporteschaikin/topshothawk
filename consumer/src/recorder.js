@@ -30,23 +30,15 @@ pub struct SaleMoment {
   }
 }
 
-pub fun main(seller: Address, momentID: UInt64): SaleMoment? {
+pub fun main(seller: Address, momentID: UInt64): SaleMoment {
   let acct = getAccount(seller)
   let collection =
     acct.getCapability(/public/topshotSaleCollection)!.borrow<&{Market.SalePublic}>() ?? panic("Could not borrow capability from public collection")
 
-  //return SaleMoment(
-    //moment: collection.borrowMoment(id: momentID)!,
-    //price:  collection.getPrice(tokenID: momentID)!
-  //)
-  if (collection.getIDs().length > 0){
-    return SaleMoment(
-      moment: collection.borrowMoment(id: collection.getIDs()[0])!,
-      price:  collection.getPrice(tokenID: collection.getIDs()[0])!
-    )
-  } else {
-    return nil
-  }
+  return SaleMoment(
+    moment: collection.borrowMoment(id: momentID)!,
+    price:  collection.getPrice(tokenID: momentID)!
+  )
 }
 `;
 
@@ -58,7 +50,7 @@ const fetchMomentAtParentBlock = async function (event, block) {
 
   const interaction = await sdk.build([
     sdk.script(TOPSHOT_SALE_MOMENT_SCRIPT),
-    //sdk.atBlockId(block.parentId),
+    sdk.atBlockId(block.parentId),
     sdk.args([
       sdk.arg(seller.value.value.value, types.Address),
       sdk.arg(parseInt(moment.value.value), types.UInt64),
@@ -93,22 +85,20 @@ const fetchEventsAtBlock = async function (block) {
 const brpop = function () {
   return new Promise(function (resolve) {
     redis.brpop(process.env.REDIS_QUEUE, 0, function (err, result) {
-      return resolve(
-        result === null
-          ? null
-          : JSON.parse(result[1])
-      );
+      return resolve(result === null ? null : result[1]);
     });
   });
 };
 
 module.exports = async function () {
-  const block = await brpop();
+  const json = await brpop();
 
-  if (block !== null) {
-    util.log.info(`Handling events for block ${block.id}...`);
+  if (json !== null) {
+    util.log.info(`Handling message ${json}...`);
 
+    const block = JSON.parse(json);
     const events = await fetchEventsAtBlock(block);
+
     events.forEach(async function (event) {
       const moment = await fetchMomentAtParentBlock(event, block);
 
