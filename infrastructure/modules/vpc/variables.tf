@@ -12,3 +12,4 @@ variable "public_subnet_numbers" {
   }
 }
 
+variable "key_pair_name" {}

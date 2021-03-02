@@ -40,7 +40,7 @@ data "aws_ami" "latest_ubuntu" {
 resource "aws_instance" "server" {
   ami                         = data.aws_ami.latest_ubuntu.id
   instance_type               = "t3.micro"
-  key_name                    = "topshothawk-${terraform.workspace}-bastion"
+  key_name                    = var.key_pair_name
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = [aws_security_group.security_group.id]
   associate_public_ip_address = true

@@ -8,7 +8,7 @@
       },
       {
         "name": "REDIS_URL",
-        "value": "${redis_endpoint}"
+        "value": "redis://${redis_endpoint}/1"
       },
       {
         "name": "REDIS_QUEUE",
@@ -23,7 +23,7 @@
         "value": "c1e4f4f4c4257510"
       },
       {
-        "name": "TOPSHOT_PURCHASED_EVENT_TYPE",
+        "name": "TOPSHOT_MOMENT_PURCHASED_EVENT_TYPE",
         "value": "A.c1e4f4f4c4257510.Market.MomentPurchased"
       },
       {

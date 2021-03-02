@@ -8,31 +8,39 @@ terraform {
   }
 }
 
+locals {
+  aws_key_pair_name = "topshothawk-${terraform.workspace}"
+}
+
 provider "aws" {
   region = "us-east-1"
 }
 
 resource "aws_ecr_repository" "migrator" {
-  name = "topshothawk/migrator"
+  name = "topshothawk-${terraform.workspace}/migrator"
 }
 
 resource "aws_ecr_repository" "consumer" {
-  name = "topshothawk/consumer"
+  name = "topshothawk-${terraform.workspace}/consumer"
 }
 
 module "vpc" {
   source = "./modules/vpc"
+
+  key_pair_name = local.aws_key_pair_name
 }
 
 module "bastion" {
   source = "./modules/bastion"
 
-  vpc_id    = module.vpc.id
-  subnet_id = module.vpc.public_subnets[0]
+  vpc_id        = module.vpc.id
+  subnet_id     = module.vpc.public_subnets[0]
+  key_pair_name = local.aws_key_pair_name
 }
 
 resource "aws_cloudwatch_log_group" "log_group" {
-  name = "topshothawk-${terraform.workspace}"
+  name              = "topshothawk-${terraform.workspace}"
+  retention_in_days = 1
 }
 
 resource "aws_ecs_cluster" "nexus" {
@@ -52,7 +60,7 @@ module "postgres" {
   name            = "topshothawk-${terraform.workspace}-postgres"
   subnets         = module.vpc.private_subnets
   vpc_id          = module.vpc.id
-  security_groups = [module.listener.security_group_id, module.recorder.security_group_id, module.bastion.security_group_id]
+  security_groups = [module.listener.security_group_id, module.recorder.security_group_id, module.migrator.security_group_id, module.bastion.security_group_id]
 }
 
 module "redis" {
@@ -100,4 +108,20 @@ module "recorder" {
   redis_endpoint    = module.redis.endpoint
 
   command = "record"
+}
+
+module "migrator" {
+  source = "./modules/migrator"
+
+  service_name         = "migrator"
+  ecs_cluster_id       = aws_ecs_cluster.nexus.id
+  ecr_repository_url   = aws_ecr_repository.migrator.repository_url
+  vpc_id               = module.vpc.id
+  subnets              = module.vpc.private_subnets
+  cloudwatch_log_group = aws_cloudwatch_log_group.log_group.name
+
+  database_endpoint = module.postgres.endpoint
+  database_username = module.postgres.service_username
+  database_password = module.postgres.service_password
+  database_name     = module.postgres.database_name
 }

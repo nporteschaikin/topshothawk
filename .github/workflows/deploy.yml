@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy_consumer:
-    name: Deploy Docker image to ECR
+    name: Deploy consumer
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -24,14 +24,51 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build image
-        run: docker build ./consumer --tag topshothawk/consumer
+        run: docker build ./consumer --tag topshothawk-default/consumer
 
       - name: Tag image
         run: |
-          docker tag topshothawk/consumer \
-            ${{ steps.login-ecr.outputs.registry }}/topshothawk/consumer
+          docker tag topshothawk-default/consumer \
+            ${{ steps.login-ecr.outputs.registry }}/topshothawk-default/consumer
 
       - name: Push image
         run: |
           docker push \
-            ${{ steps.login-ecr.outputs.registry }}/topshothawk/consumer
+            ${{ steps.login-ecr.outputs.registry }}/topshothawk-default/consumer
+
+      - name: Force ECS deployment
+        run: |
+          aws ecs update-service \
+            --force-new-deployment \
+            --service recorder \
+            --cluster topshothawk-default-nexus
+
+  deploy_migrator:
+    name: Deploy migrator
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build image
+        run: docker build ./migrator --tag topshothawk-default/migrator
+
+      - name: Tag image
+        run: |
+          docker tag topshothawk-default/migrator \
+            ${{ steps.login-ecr.outputs.registry }}/topshothawk-default/migrator
+
+      - name: Push image
+        run: |
+          docker push \
+            ${{ steps.login-ecr.outputs.registry }}/topshothawk-default/migrator
