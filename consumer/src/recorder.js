@@ -1,10 +1,10 @@
-const insert = require('./helpers/insert');
-const redis = require('./helpers/redis');
-const util = require('./helpers/util');
+const insert = require("./helpers/insert");
+const redis = require("./helpers/redis");
+const util = require("./helpers/util");
 
-const sdk = require('@onflow/sdk');
-const types = require('@onflow/types');
-const interaction = require('@onflow/interaction');
+const sdk = require("@onflow/sdk");
+const types = require("@onflow/types");
+const interaction = require("@onflow/interaction");
 
 const TOPSHOT_SALE_MOMENT_SCRIPT = `
 import TopShot from 0x${process.env.TOPSHOT_ADDRESS}
@@ -50,7 +50,7 @@ pub fun main(seller: Address, momentID: UInt64): SaleMoment? {
 }
 `;
 
-const fetchMomentAtParentBlock = async function(event, block) {
+const fetchMomentAtParentBlock = async function (event, block) {
   const payload = event.payload;
   const value = payload.value;
   const moment = value.fields[0];
@@ -77,12 +77,12 @@ const fetchMomentAtParentBlock = async function(event, block) {
   return body === null ? null : body.value;
 };
 
-const fetchEventsAtBlock = async function(block) {
+const fetchEventsAtBlock = async function (block) {
   const interaction = await sdk.build([
     sdk.getEvents(
       process.env.TOPSHOT_MOMENT_PURCHASED_EVENT_TYPE,
       block.height - 10,
-      block.height,
+      block.height
     ),
   ]);
 
@@ -90,22 +90,26 @@ const fetchEventsAtBlock = async function(block) {
   return response.events;
 };
 
-const brpop = function() {
-  return new Promise(function(resolve) {
-    redis.brpop(process.env.REDIS_QUEUE, 0, function(err, result) {
-      resolve(result === null ? null : JSON.parse(result[1]));
+const brpop = function () {
+  return new Promise(function (resolve) {
+    redis.brpop(process.env.REDIS_QUEUE, 0, function (err, result) {
+      return resolve(
+        result === null
+          ? null
+          : JSON.parse(result[1])
+      );
     });
   });
 };
 
-module.exports = async function() {
+module.exports = async function () {
   const block = await brpop();
 
   if (block !== null) {
     util.log.info(`Handling events for block ${block.id}...`);
 
     const events = await fetchEventsAtBlock(block);
-    events.forEach(async function(event) {
+    events.forEach(async function (event) {
       const moment = await fetchMomentAtParentBlock(event, block);
 
       if (moment !== null) {
