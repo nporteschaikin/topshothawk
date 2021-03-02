@@ -26,47 +26,47 @@ SET default_with_oids = false;
 
 CREATE TABLE public.moments (
     id bigint NOT NULL,
-    externalid character varying,
-    serialnumber character varying,
+    external_id character varying,
+    serial_number character varying,
     price double precision,
-    playerfullname character varying,
-    playerfirstname character varying,
-    playerlastname character varying,
-    playerbirthdate date,
-    playerbirthplace character varying,
-    playerjerseynumber character varying,
-    playerdraftteam character varying,
-    playerdraftyear bigint,
-    playerdraftselection integer,
-    playerdraftround integer,
-    playerteamatmomentnbaid bigint,
-    playerteamatmomentname character varying,
-    playerprimaryposition character varying,
-    playerposition character varying,
-    playerheightinches integer,
-    playerweightpounds integer,
-    playeryearsexperience integer,
-    playnbaseason character varying,
-    playgametime timestamp without time zone,
-    playcategory character varying,
-    playtype character varying,
-    playhometeamname character varying,
-    playawayteamname character varying,
-    playhometeamscore bigint,
-    playawayteamscore bigint,
-    setid bigint,
-    setname character varying,
-    createdat timestamp without time zone
+    player_full_name character varying,
+    player_first_name character varying,
+    player_last_name character varying,
+    player_birthdate date,
+    player_birthplace character varying,
+    player_jersey_number character varying,
+    player_draft_team character varying,
+    player_draft_year bigint,
+    player_draft_selection integer,
+    player_draft_round integer,
+    player_team_at_moment_nbaid bigint,
+    player_team_at_moment_name character varying,
+    player_primary_position character varying,
+    player_position character varying,
+    player_height_inches integer,
+    player_weight_pounds integer,
+    player_years_experience integer,
+    play_nba_season character varying,
+    play_game_time timestamp without time zone,
+    play_category character varying,
+    play_type character varying,
+    play_home_team_name character varying,
+    play_away_team_name character varying,
+    play_home_team_score bigint,
+    play_away_team_score bigint,
+    set_id bigint,
+    set_name character varying,
+    created_at timestamp without time zone
 );
 
 
 ALTER TABLE public.moments OWNER TO postgres;
 
 --
--- Name: momentsidseq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: moments_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE public.momentsidseq
+CREATE SEQUENCE public.moments_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -74,13 +74,13 @@ CREATE SEQUENCE public.momentsidseq
     CACHE 1;
 
 
-ALTER TABLE public.momentsidseq OWNER TO postgres;
+ALTER TABLE public.moments_id_seq OWNER TO postgres;
 
 --
--- Name: momentsidseq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: moments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE public.momentsidseq OWNED BY public.moments.id;
+ALTER SEQUENCE public.moments_id_seq OWNED BY public.moments.id;
 
 
 --
@@ -98,7 +98,7 @@ ALTER TABLE public.schema_migrations OWNER TO postgres;
 -- Name: moments id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.moments ALTER COLUMN id SET DEFAULT nextval('public.momentsidseq'::regclass);
+ALTER TABLE ONLY public.moments ALTER COLUMN id SET DEFAULT nextval('public.moments_id_seq'::regclass);
 
 
 --
@@ -110,10 +110,10 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
--- Name: indexmomentsonexternalid; Type: INDEX; Schema: public; Owner: postgres
+-- Name: index_moments_on_external_id; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE UNIQUE INDEX indexmomentsonexternalid ON public.moments USING btree (externalid);
+CREATE UNIQUE INDEX index_moments_on_external_id ON public.moments USING btree (external_id);
 
 
 --
