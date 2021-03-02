@@ -12,7 +12,7 @@ const statement = `
     price,
     player_full_name,
     player_first_name,
-    player_lastname,
+    player_last_name,
     player_birthdate,
     player_birthplace,
     player_jersey_number,
@@ -72,7 +72,7 @@ const statement = `
     $30,
     now()
   )
-  ON CONFLICT (externalId)
+  ON CONFLICT (external_id)
   DO NOTHING
 `;
 
