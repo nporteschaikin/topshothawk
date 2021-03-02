@@ -31,6 +31,7 @@ services:
   migrator:
     build:
       context: ./migrator
+    command: migrate
     volumes:
       - ./migrator:/usr/src/app
     env_file:
