@@ -62,7 +62,10 @@ resource "aws_ecs_service" "service" {
   name            = var.service_name
   cluster         = var.ecs_cluster_id
   task_definition = aws_ecs_task_definition.task_definition.arn
-  desired_count   = 1
+
+  desired_count                      = var.desired_count
+  deployment_maximum_percent         = var.deployment_maximum_percent
+  deployment_minimum_healthy_percent = var.deployment_minimum_healthy_percent
 
   network_configuration {
     subnets          = var.subnets

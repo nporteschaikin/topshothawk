@@ -2,7 +2,7 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 resource "aws_iam_role" "task_role" {
-  name               = "topshothawk-${terraform.workspace}-${var.service_name}-task"
+  name = "topshothawk-${terraform.workspace}-${var.service_name}-task"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
