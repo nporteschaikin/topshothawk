@@ -20,7 +20,7 @@ module.exports = async function () {
   util.log.info(`Fetching latest block...`);
 
   const block = await fetchLatestBlock();
-  await lpush({ id: block.id, height: block.height });
+  await lpush({ id: block.id, height: block.height, parentId: block.parentId });
 
   util.log.info(`✍️  Pushed block ${block.id} to Redis queue.`);
 };
