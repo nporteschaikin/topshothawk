@@ -32,7 +32,7 @@ module.exports.stripEventType = stripEventType;
 
 const ownerFieldsIndexInEventPayload = function (event) {
   switch (stripEventType(event.type)) {
-    case constants.MOMENT_WITHDRAWN_EVENT_TYPE: {
+    case constants.EVENT_TYPES.MOMENT_WITHDRAWN: {
       return 1;
     }
     default: {

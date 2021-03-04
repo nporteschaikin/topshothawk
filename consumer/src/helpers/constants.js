@@ -1,7 +1,12 @@
-module.exports.BLOCK_FETCHED_QUEUE = "BlockFetched";
+module.exports.BLOCK_FETCHED_QUEUE_PREFIX = "BlockFetched";
 module.exports.EVENT_FETCHED_QUEUE = "EventFetched";
 
-module.exports.MOMENT_WITHDRAWN_EVENT_TYPE = "Market.MomentWithdrawn";
+module.exports.EVENT_TYPES = {
+  MOMENT_LISTED: "Market.MomentListed",
+  MOMENT_PRICE_CHANGED: "Market.MomentPriceChanged",
+  MOMENT_PURCHASED: "Market.MomentPURCHASED",
+  MOMENT_WITHDRAWN: "Market.MomentWithdrawn",
+};
 
 module.exports.EVENTS_TABLE = "events";
 module.exports.MOMENTS_TABLE = "moments";

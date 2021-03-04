@@ -17,9 +17,13 @@ module.exports = function () {
   return async function () {
     const block = await fetchLatestBlock();
 
-    await queue.push(constants.BLOCK_FETCHED_QUEUE, {
-      id: block.id,
-      height: block.height,
+    await Object.values(constants.EVENT_TYPES).forEach(async function (
+      eventType
+    ) {
+      await queue.push(queue.buildBlockFetchedQueueName(eventType), {
+        id: block.id,
+        height: block.height,
+      });
     });
   };
 };

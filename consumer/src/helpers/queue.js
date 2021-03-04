@@ -1,5 +1,6 @@
 const redis = require("redis").createClient(process.env.REDIS_URL);
 const util = require("./util");
+const constants = require("./constants");
 
 const formatJSON = function (json) {
   return json.slice(0, 100);
@@ -39,4 +40,8 @@ module.exports.pop = async function (queue) {
       return resolve(JSON.parse(json));
     });
   });
+};
+
+module.exports.buildBlockFetchedQueueName = function (eventType) {
+  return [constants.BLOCK_FETCHED_QUEUE_PREFIX, eventType].join(".");
 };

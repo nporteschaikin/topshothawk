@@ -41,7 +41,7 @@ const fetchEventsAtBlock = async function (block, eventType, attempt = 1) {
   const interaction = await sdk.build([
     sdk.getEvents(
       `${process.env.TOPSHOT_EVENT_TYPE_PREFIX}.${eventType}`,
-      block.height - 500,
+      block.height - 10,
       block.height
     ),
   ]);
@@ -52,9 +52,23 @@ const fetchEventsAtBlock = async function (block, eventType, attempt = 1) {
   });
 };
 
+const cleanQueueMessage = function (block, event, moment) {
+  return {
+    block: { id: block.id },
+    event: {
+      eventIndex: event.eventIndex,
+      payload: event.payload,
+      transactionId: event.transactionId,
+      transactionIndex: event.transactionIndex,
+      type: event.type,
+    },
+    moment,
+  };
+};
+
 module.exports = function (eventType) {
   return async function () {
-    const block = await queue.pop(constants.BLOCK_FETCHED_QUEUE);
+    const block = await queue.pop(queue.buildBlockFetchedQueueName(eventType));
 
     if (block !== null) {
       const events = await fetchEventsAtBlock(block, eventType);
@@ -63,17 +77,10 @@ module.exports = function (eventType) {
 
       events.forEach(async function (event) {
         const moment = await fetchMomentForEventAtBlock(block, event);
-        queue.push(constants.EVENT_FETCHED_QUEUE, {
-          block: { id: block.id },
-          event: {
-            eventIndex: event.eventIndex,
-            payload: event.payload,
-            transactionId: event.transactionId,
-            transactionIndex: event.transactionIndex,
-            type: event.type,
-          },
-          moment,
-        });
+        queue.push(
+          constants.EVENT_FETCHED_QUEUE,
+          cleanQueueMessage(block, event, moment)
+        );
       });
     }
   };
