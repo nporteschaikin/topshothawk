@@ -44,7 +44,7 @@ jobs:
             moment-purchased-fetcher \
             moment-listed-fetcher \
             moment-withdrawn-fetcher \
-            moment-price_changed-fetcher
+            moment-price-changed-fetcher
           do
             aws ecs update-service \
               --force-new-deployment \
