@@ -16,6 +16,62 @@ services:
     depends_on:
       - redis
 
+  purchased_fetcher:
+    build:
+      context: ./consumer
+    command:
+      - fetch
+      - Market.MomentPurchased
+    volumes:
+      - ./consumer:/usr/src/app
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+
+  listed_fetcher:
+    build:
+      context: ./consumer
+    command:
+      - fetch
+      - Market.MomentListed
+    volumes:
+      - ./consumer:/usr/src/app
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+
+  withdrawn_fetcher:
+    build:
+      context: ./consumer
+    command:
+      - fetch
+      - Market.MomentWithdrawn
+    volumes:
+      - ./consumer:/usr/src/app
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+
+  price_changed_fetcher:
+    build:
+      context: ./consumer
+    command:
+      - fetch
+      - Market.MomentPriceChanged
+    volumes:
+      - ./consumer:/usr/src/app
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+
   recorder:
     build:
       context: ./consumer
@@ -48,6 +104,8 @@ services:
 
   redis:
     image: redis:4.0.2-alpine
+    ports:
+      - 5434:6379
     command:
       - redis-server
       - --appendonly

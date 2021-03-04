@@ -21,6 +21,47 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: events; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.events (
+    id bigint NOT NULL,
+    type character varying NOT NULL,
+    price double precision,
+    external_block_id character varying NOT NULL,
+    external_transaction_id character varying NOT NULL,
+    external_moment_id character varying NOT NULL,
+    external_owner_id character varying NOT NULL,
+    external_transaction_index integer NOT NULL,
+    external_event_index integer NOT NULL,
+    created_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public.events OWNER TO postgres;
+
+--
+-- Name: events_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.events_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.events_id_seq OWNER TO postgres;
+
+--
+-- Name: events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.events_id_seq OWNED BY public.events.id;
+
+
+--
 -- Name: moments; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -95,6 +136,13 @@ CREATE TABLE public.schema_migrations (
 ALTER TABLE public.schema_migrations OWNER TO postgres;
 
 --
+-- Name: events id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.events ALTER COLUMN id SET DEFAULT nextval('public.events_id_seq'::regclass);
+
+
+--
 -- Name: moments id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -107,6 +155,27 @@ ALTER TABLE ONLY public.moments ALTER COLUMN id SET DEFAULT nextval('public.mome
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: index_events_on_external_moment_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX index_events_on_external_moment_id ON public.events USING btree (external_moment_id);
+
+
+--
+-- Name: index_events_on_external_owner_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX index_events_on_external_owner_id ON public.events USING btree (external_owner_id);
+
+
+--
+-- Name: index_events_on_external_transaction_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX index_events_on_external_transaction_id ON public.events USING btree (external_transaction_id);
 
 
 --
