@@ -1,5 +1,4 @@
 const redis = require("redis").createClient(process.env.REDIS_URL);
-console.log(process.env.REDIS_URL);
 const util = require("./util");
 const constants = require("./constants");
 
