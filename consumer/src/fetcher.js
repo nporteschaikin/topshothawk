@@ -63,7 +63,17 @@ module.exports = function (eventType) {
 
       events.forEach(async function (event) {
         const moment = await fetchMomentForEventAtBlock(block, event);
-        queue.push(constants.EVENT_FETCHED_QUEUE, { block, event, moment });
+        queue.push(constants.EVENT_FETCHED_QUEUE, {
+          block: { id: block.id },
+          event: {
+            eventIndex: event.eventIndex,
+            payload: event.payload,
+            transactionId: event.transactionId,
+            transactionIndex: event.transactionIndex,
+            type: event.type,
+          },
+          moment,
+        });
       });
     }
   };

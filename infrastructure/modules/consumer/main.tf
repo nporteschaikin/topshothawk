@@ -44,7 +44,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   network_mode             = "awsvpc"
   execution_role_arn       = aws_iam_role.execution_role.arn
 
-  container_definitions = templatefile("${path.module}/service.json", {
+  container_definitions = templatefile("${path.module}/service.json.tpl", {
     aws_region           = data.aws_region.current.name
     cloudwatch_log_group = "topshothawk-${terraform.workspace}"
     command              = var.command

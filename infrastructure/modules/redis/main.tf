@@ -20,7 +20,7 @@ resource "aws_elasticache_replication_group" "replication_group" {
   replication_group_id          = var.name
   replication_group_description = var.name
   engine                        = "redis"
-  node_type                     = "cache.t2.micro"
+  node_type                     = "cache.t2.medium"
   number_cache_clusters         = 1
   parameter_group_name          = "default.redis3.2"
   engine_version                = "3.2.10"

@@ -27,7 +27,7 @@
         "value": "https://access-mainnet-beta.onflow.org"
       }
     ],
-    "command": ["${command}"],
+    "command": ["${join("\",\"", command)}"],
     "image": "${ecr_repository_url}:latest",
     "logConfiguration": {
       "logDriver": "awslogs",

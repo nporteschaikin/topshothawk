@@ -1,4 +1,6 @@
-variable "command" {}
+variable "command" {
+  type = list(string)
+}
 variable "ecr_repository_url" {}
 variable "ecs_cluster_id" {}
 variable "service_name" {}

@@ -1,18 +1,20 @@
-const util = require('./helpers/util');
-const queue = require('./helpers/queue');
-const constants = require('./helpers/constants');
+const util = require("./helpers/util");
+const queue = require("./helpers/queue");
+const constants = require("./helpers/constants");
 
-const sdk = require('@onflow/sdk');
+const sdk = require("@onflow/sdk");
 
-const fetchLatestBlock = async function() {
+const fetchLatestBlock = async function () {
   const interaction = await sdk.build([sdk.getLatestBlock()]);
 
-  const response = await util.send(interaction);
-  return response.block;
+  return await util.retry(async function () {
+    const response = await util.send(interaction);
+    return response.block;
+  });
 };
 
-module.exports = function() {
-  return async function() {
+module.exports = function () {
+  return async function () {
     const block = await fetchLatestBlock();
 
     await queue.push(constants.BLOCK_FETCHED_QUEUE, {

@@ -88,7 +88,7 @@ module "listener" {
   database_name     = module.postgres.database_name
   redis_endpoint    = module.redis.endpoint
 
-  command = "listen"
+  command = ["listen"]
 }
 
 module "fetchers" {
@@ -114,7 +114,7 @@ module "fetchers" {
   database_name     = module.postgres.database_name
   redis_endpoint    = module.redis.endpoint
 
-  command = "fetch ${each.value}"
+  command = ["fetch", each.value]
 }
 
 module "recorder" {
@@ -133,7 +133,7 @@ module "recorder" {
   database_name     = module.postgres.database_name
   redis_endpoint    = module.redis.endpoint
 
-  command = "record"
+  command = ["record"]
 }
 
 module "migrator" {
