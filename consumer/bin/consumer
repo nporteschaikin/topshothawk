@@ -35,10 +35,10 @@ const args = process.argv.slice(2);
 
 switch (args[0]) {
   case 'listen': {
-    return run(require("./../src/listener")(), 2000);
+    return run(require("./../src/listener")(), 1000);
   }
   case 'fetch': {
-    return run(require("./../src/fetcher")(args[1]), 5000);
+    return run(require("./../src/fetcher")(args[1]), 1000);
   }
   case 'record': {
     return run(require("./../src/recorder")(), 500);
