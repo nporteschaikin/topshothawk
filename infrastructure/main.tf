@@ -66,10 +66,19 @@ module "postgres" {
 module "redis" {
   source = "./modules/redis"
 
-  name            = "topshothawk-${terraform.workspace}-redis"
-  subnets         = module.vpc.private_subnets
-  vpc_id          = module.vpc.id
-  security_groups = [module.listener.security_group_id, module.recorder.security_group_id, module.bastion.security_group_id]
+  name    = "topshothawk-${terraform.workspace}-redis"
+  subnets = module.vpc.private_subnets
+  vpc_id  = module.vpc.id
+
+  security_groups = [
+    module.bastion.security_group_id,
+    module.fetchers["moment-listed"].security_group_id,
+    module.fetchers["moment-price-changed"].security_group_id,
+    module.fetchers["moment-purchased"].security_group_id,
+    module.fetchers["moment-withdrawn"].security_group_id,
+    module.listener.security_group_id,
+    module.recorder.security_group_id
+  ]
 }
 
 module "listener" {
