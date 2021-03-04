@@ -30,6 +30,10 @@ resource "aws_subnet" "public_subnets" {
 
 resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    "Name" = "topshothawk-${terraform.workspace}-gateway"
+  }
 }
 
 resource "aws_route_table" "public_route_table" {
@@ -135,7 +139,7 @@ resource "aws_security_group" "nat" {
 
 resource "aws_instance" "nat" {
   ami                         = "ami-01623d7b"
-  instance_type               = "m1.small"
+  instance_type               = "t3.micro"
   key_name                    = var.key_pair_name
   vpc_security_group_ids      = [aws_security_group.nat.id]
   subnet_id                   = aws_subnet.public_subnets["us-east-1a"].id
