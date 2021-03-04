@@ -38,10 +38,19 @@ jobs:
 
       - name: Force ECS deployment
         run: |
-          aws ecs update-service \
-            --force-new-deployment \
-            --service recorder \
-            --cluster topshothawk-default-nexus
+          for service in \
+            listener \
+            recorder \
+            moment-purchased-fetcher \
+            moment-listed-fetcher \
+            moment-withdrawn-fetcher \
+            moment-price_changed-fetcher
+          do
+            aws ecs update-service \
+              --force-new-deployment \
+              --service $service \
+              --cluster topshothawk-default-nexus
+          done
 
   deploy_migrator:
     name: Deploy migrator

@@ -93,10 +93,10 @@ module "listener" {
 
 module "fetchers" {
   for_each = {
-    moment_purchased : "Market.MomentPurchased"
-    moment_listed : "Market.MomentListed"
-    moment_withdrawn : "Market.MomentWithdrawn"
-    moment_price_changed : "Market.MomentPriceChanged"
+    "moment-purchased" : "Market.MomentPurchased"
+    "moment-listed" : "Market.MomentListed"
+    "moment-withdrawn" : "Market.MomentWithdrawn"
+    "moment-price-changed" : "Market.MomentPriceChanged"
   }
 
   source = "./modules/consumer"
