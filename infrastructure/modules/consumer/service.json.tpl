@@ -12,7 +12,7 @@
       },
       {
         "name": "REDIS_URL",
-        "value": "redis://${redis_endpoint}/1"
+        "value": "redis://${redis_endpoint}"
       },
       {
         "name": "TOPSHOT_ADDRESS",
