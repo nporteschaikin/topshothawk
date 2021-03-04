@@ -7,6 +7,10 @@
         "value": "postgresql://${database_username}:${database_password}@${database_endpoint}/${database_name}"
       },
       {
+        "name": "LOG_QUEUE",
+        "value": "true"
+      },
+      {
         "name": "REDIS_URL",
         "value": "redis://${redis_endpoint}/1"
       },

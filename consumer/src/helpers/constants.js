@@ -4,7 +4,7 @@ module.exports.EVENT_FETCHED_QUEUE = "EventFetched";
 module.exports.EVENT_TYPES = {
   MOMENT_LISTED: "Market.MomentListed",
   MOMENT_PRICE_CHANGED: "Market.MomentPriceChanged",
-  MOMENT_PURCHASED: "Market.MomentPURCHASED",
+  MOMENT_PURCHASED: "Market.MomentPurchased",
   MOMENT_WITHDRAWN: "Market.MomentWithdrawn",
 };
 
