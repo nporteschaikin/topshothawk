@@ -35,19 +35,12 @@ const args = process.argv.slice(2);
 
 switch (args[0]) {
   case 'listen': {
-    const listener = require('./../src/listener');
-
-    util.log.info('🔥 Starting listener...');
-    run(listener, 500);
-
-    break;
+    return run(require("./../src/listener")(), 2000);
+  }
+  case 'fetch': {
+    return run(require("./../src/fetcher")(args[1]), 5000);
   }
   case 'record': {
-    const recorder = require('./../src/recorder');
-
-    util.log.info('🔥 Starting recorder...');
-    run(recorder, 2000);
-
-    break;
+    return run(require("./../src/recorder")(), 500);
   }
 }

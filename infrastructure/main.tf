@@ -91,6 +91,32 @@ module "listener" {
   command = "listen"
 }
 
+module "fetchers" {
+  for_each = {
+    moment_purchased : "Market.MomentPurchased"
+    moment_listed : "Market.MomentListed"
+    moment_withdrawn : "Market.MomentWithdrawn"
+    moment_price_changed : "Market.MomentPriceChanged"
+  }
+
+  source = "./modules/consumer"
+
+  service_name         = "${each.key}-fetcher"
+  ecs_cluster_id       = aws_ecs_cluster.nexus.id
+  ecr_repository_url   = aws_ecr_repository.consumer.repository_url
+  vpc_id               = module.vpc.id
+  subnets              = module.vpc.private_subnets
+  cloudwatch_log_group = aws_cloudwatch_log_group.log_group.name
+
+  database_endpoint = module.postgres.endpoint
+  database_username = module.postgres.service_username
+  database_password = module.postgres.service_password
+  database_name     = module.postgres.database_name
+  redis_endpoint    = module.redis.endpoint
+
+  command = "fetch ${each.value}"
+}
+
 module "recorder" {
   source = "./modules/consumer"
 
