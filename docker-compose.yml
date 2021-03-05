@@ -16,7 +16,7 @@ services:
     depends_on:
       - redis
 
-  purchased_fetcher:
+  moment_purchased_fetcher:
     build:
       context: ./consumer
     command:
@@ -30,7 +30,7 @@ services:
       - postgres
       - redis
 
-  listed_fetcher:
+  moment_listed_fetcher:
     build:
       context: ./consumer
     command:
@@ -44,7 +44,7 @@ services:
       - postgres
       - redis
 
-  withdrawn_fetcher:
+  moment_withdrawn_fetcher:
     build:
       context: ./consumer
     command:
@@ -58,7 +58,7 @@ services:
       - postgres
       - redis
 
-  price_changed_fetcher:
+  moment_price_changed_fetcher:
     build:
       context: ./consumer
     command:

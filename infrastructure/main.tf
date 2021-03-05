@@ -142,7 +142,7 @@ module "recorder" {
   database_name     = module.postgres.database_name
   redis_endpoint    = module.redis.endpoint
 
-  desired_count = 3
+  desired_count = 6
 
   command = ["record"]
 }
