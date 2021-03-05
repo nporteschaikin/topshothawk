@@ -41,7 +41,7 @@ const fetchEventsAtBlock = async function (block, eventType, attempt = 1) {
   const interaction = await sdk.build([
     sdk.getEvents(
       `${process.env.TOPSHOT_EVENT_TYPE_PREFIX}.${eventType}`,
-      block.height - 100,
+      block.height - 500,
       block.height
     ),
   ]);

@@ -26,7 +26,7 @@ const run = async function(fn, sleep) {
   while (!shutdown) {
     await fn();
 
-    util.log.info('Sleeping...');
+    util.log.info(`Sleeping for ${sleep}ms...`);
     await util.sleep(sleep);
   }
 };
@@ -35,10 +35,10 @@ const args = process.argv.slice(2);
 
 switch (args[0]) {
   case 'listen': {
-    return run(require("./../src/listener")(), 1000);
+    return run(require("./../src/listener")(), 2000);
   }
   case 'fetch': {
-    return run(require("./../src/fetcher")(args[1]), 1000);
+    return run(require("./../src/fetcher")(args[1]), 5000);
   }
   case 'record': {
     return run(require("./../src/recorder")(), 500);
