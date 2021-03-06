@@ -15,6 +15,14 @@
         "value": "redis://${redis_endpoint}"
       },
       {
+        "name": "LOG_QUEUE_POP",
+        "value": "true"
+      },
+      {
+        "name": "LOG_QUEUE_PUSH",
+        "value": "true"
+      },
+      {
         "name": "TOPSHOT_ADDRESS",
         "value": "0b2a3299cc857e29"
       },

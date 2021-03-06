@@ -52,8 +52,8 @@ module.exports.push = async function (queue, payload) {
 };
 
 module.exports.pop = async function (queue) {
-  return new Promise(function (resolve) {
-    redis.brpop(queue, 0, buildPopHandler(1, resolve));
+  return new Promise(function (resolve, reject) {
+    redis.brpop(queue, 0, buildPopHandler(1, resolve, reject));
   });
 };
 
