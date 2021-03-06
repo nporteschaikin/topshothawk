@@ -22,8 +22,8 @@ resource "aws_elasticache_replication_group" "replication_group" {
   engine                        = "redis"
   node_type                     = "cache.t2.micro"
   number_cache_clusters         = 1
-  parameter_group_name          = "default.redis4.0"
-  engine_version                = "4.0.10"
+  parameter_group_name          = "default.redis5.0"
+  engine_version                = "5.0.6"
   port                          = 6379
   subnet_group_name             = aws_elasticache_subnet_group.subnet_group.id
   security_group_ids            = [aws_security_group.security_group.id]

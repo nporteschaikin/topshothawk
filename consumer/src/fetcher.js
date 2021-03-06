@@ -41,7 +41,7 @@ const fetchEventsAtBlock = async function (block, eventType) {
   const interaction = await sdk.build([
     sdk.getEvents(
       `${process.env.TOPSHOT_EVENT_TYPE_PREFIX}.${eventType}`,
-      block.height - 500,
+      block.height - 100,
       block.height
     ),
   ]);
@@ -68,15 +68,18 @@ const cleanQueueMessage = function (block, event, moment) {
 
 module.exports = function (eventType) {
   return async function () {
-    const block = await queue.pop(queue.buildBlockFetchedQueueName(eventType));
+    const block = await queue.uniquePop(
+      queue.buildBlockFetchedQueueName(eventType)
+    );
 
     if (block !== null) {
       const events = await fetchEventsAtBlock(block, eventType);
 
       util.log.info(`Pulled ${events.length} events.`);
 
-      events.forEach(async function (event) {
+      await util.forEach(events, async function (event) {
         const moment = await fetchMomentForEventAtBlock(block, event);
+
         queue.push(
           constants.EVENT_FETCHED_QUEUE,
           cleanQueueMessage(block, event, moment)

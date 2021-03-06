@@ -11,7 +11,7 @@ const pg = require("knex")({
 });
 
 const upsertEvent = async function (event) {
-  await pg(constants.EVENTS_TABLE)
+  const result = await pg(constants.EVENTS_TABLE)
     .insert(util.underscore(eventTranslator(event)))
     .onConflict(constants.EXTERNAL_TRANSACTION_ID_COLUMN)
     .ignore();

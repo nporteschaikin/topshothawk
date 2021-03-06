@@ -55,12 +55,19 @@ const retry = async function (fn, attempt = 1) {
     }
 
     log.info(
-      `Retrying after five-second rest due to error: ${e.message} (attempt #${
-        attempt + 1
-      })...`
+      `Retrying after five-second rest due to error: ${e.message} (attempt #${attempt})...`
     );
-    sleep(5000);
-    return retry(fn, attempt + 1);
+
+    await sleep(5000);
+    await retry(fn, attempt + 1);
   }
 };
 module.exports.retry = retry;
+
+// async for-each
+const forEach = async function (arr, cb) {
+  for (let index = 0; index < arr.length; index++) {
+    await cb(arr[index], index, arr);
+  }
+};
+module.exports.forEach = forEach;

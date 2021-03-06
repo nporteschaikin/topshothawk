@@ -151,11 +151,6 @@ resource "aws_instance" "nat" {
   }
 }
 
-resource "aws_eip" "nat" {
-  instance = aws_instance.nat.id
-  vpc      = true
-}
-
 resource "aws_route_table" "private_route_table" {
   vpc_id = aws_vpc.vpc.id
 

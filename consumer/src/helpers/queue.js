@@ -6,39 +6,69 @@ const formatJSON = function (json) {
   return json.slice(0, 100);
 };
 
+const buildPushHandler = function (queue, json, resolve) {
+  return function () {
+    if (process.env.LOG_QUEUE_PUSH) {
+      util.log.info(`Pushed message ${formatJSON(json)}... to queue ${queue}.`);
+    }
+
+    resolve();
+  };
+};
+
+const buildPopHandler = function (resultIndex, resolve) {
+  return function (err, result) {
+    if (typeof result === "undefined") {
+      resolve(null);
+      return;
+    }
+
+    const json = result[resultIndex];
+
+    if (typeof json === "undefined") {
+      resolve(null);
+      return;
+    }
+
+    if (process.env.LOG_QUEUE_POP) {
+      util.log.info(`Popped message ${formatJSON(json)}...`);
+    }
+
+    resolve(JSON.parse(json));
+  };
+};
+
 module.exports.push = async function (queue, payload) {
   return new Promise(function (resolve) {
     const json = JSON.stringify(payload);
 
-    redis.lpush(queue, json, function () {
-      if (process.env.LOG_QUEUE) {
-        util.log.info(
-          `Pushed message ${formatJSON(json)}... to queue ${queue}.`
-        );
-      }
-
-      resolve();
-    });
+    redis.lpush(queue, json, buildPushHandler(queue, json, resolve));
   });
 };
 
 module.exports.pop = async function (queue) {
-  if (process.env.LOG_QUEUE) {
-    util.log.info(`Popping from ${queue} queue...`);
-  }
-
   return new Promise(function (resolve) {
-    redis.brpop(queue, 0, function (err, result) {
-      if (result === null) return resolve(null);
+    redis.brpop(queue, 0, buildPopHandler(1, resolve));
+  });
+};
 
-      const json = result[1];
+module.exports.uniquePush = async function (queue, payload) {
+  return new Promise(function (resolve) {
+    const json = JSON.stringify(payload);
 
-      if (process.env.LOG_QUEUE) {
-        util.log.info(`Popped message ${formatJSON(json)}...`);
-      }
+    redis.zadd(
+      queue,
+      "NX",
+      new Date().getTime().toString(),
+      json,
+      buildPushHandler(queue, json, resolve)
+    );
+  });
+};
 
-      return resolve(JSON.parse(json));
-    });
+module.exports.uniquePop = async function (queue, payload) {
+  return new Promise(function (resolve) {
+    redis.zpopmin(queue, buildPopHandler(0, resolve));
   });
 };
 
