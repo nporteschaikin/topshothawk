@@ -24,11 +24,17 @@ const run = async function(fn, sleep) {
   });
 
   while (!shutdown) {
-    await fn();
+    try {
+      await fn();
+    } catch (e) {
+      process.exit(1)
+    }
 
     util.log.info(`Sleeping for ${sleep}ms...`);
     await util.sleep(sleep);
   }
+
+  process.exit(1)
 };
 
 const args = process.argv.slice(2);
