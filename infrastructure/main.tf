@@ -16,12 +16,16 @@ provider "aws" {
   region = "us-east-1"
 }
 
-resource "aws_ecr_repository" "migrator" {
-  name = "topshothawk-${terraform.workspace}/migrator"
+module "consumer_repository" {
+  source = "./modules/repository"
+
+  name = "topshothawk-${terraform.workspace}/consumer"
 }
 
-resource "aws_ecr_repository" "consumer" {
-  name = "topshothawk-${terraform.workspace}/consumer"
+module "migrator_repository" {
+  source = "./modules/repository"
+
+  name = "topshothawk-${terraform.workspace}/migrator"
 }
 
 resource "aws_cloudwatch_log_group" "log_group" {
@@ -92,7 +96,7 @@ module "listener" {
 
   service_name         = "listener"
   ecs_cluster_id       = aws_ecs_cluster.nexus.id
-  ecr_repository_url   = aws_ecr_repository.consumer.repository_url
+  ecr_repository_url   = module.consumer_repository.url
   vpc_id               = module.vpc.id
   subnets              = module.vpc.private_subnets
   cloudwatch_log_group = aws_cloudwatch_log_group.log_group.name
@@ -119,7 +123,7 @@ module "fetchers" {
 
   service_name         = "${each.key}-fetcher"
   ecs_cluster_id       = aws_ecs_cluster.nexus.id
-  ecr_repository_url   = aws_ecr_repository.consumer.repository_url
+  ecr_repository_url   = module.consumer_repository.url
   vpc_id               = module.vpc.id
   subnets              = module.vpc.private_subnets
   cloudwatch_log_group = aws_cloudwatch_log_group.log_group.name
@@ -139,7 +143,7 @@ module "recorder" {
 
   service_name         = "recorder"
   ecs_cluster_id       = aws_ecs_cluster.nexus.id
-  ecr_repository_url   = aws_ecr_repository.consumer.repository_url
+  ecr_repository_url   = module.consumer_repository.url
   vpc_id               = module.vpc.id
   subnets              = module.vpc.private_subnets
   cloudwatch_log_group = aws_cloudwatch_log_group.log_group.name
@@ -151,7 +155,7 @@ module "recorder" {
   database_name     = module.postgres.database_name
   redis_endpoint    = module.redis.endpoint
 
-  desired_count = 6
+  desired_count = 2
 
   command = ["record"]
 }
@@ -161,7 +165,7 @@ module "migrator" {
 
   service_name         = "migrator"
   ecs_cluster_id       = aws_ecs_cluster.nexus.id
-  ecr_repository_url   = aws_ecr_repository.migrator.repository_url
+  ecr_repository_url   = module.migrator_repository.url
   vpc_id               = module.vpc.id
   subnets              = module.vpc.private_subnets
   cloudwatch_log_group = aws_cloudwatch_log_group.log_group.name
