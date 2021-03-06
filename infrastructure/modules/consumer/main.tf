@@ -46,6 +46,7 @@ resource "aws_ecs_task_definition" "task_definition" {
 
   container_definitions = templatefile("${path.module}/service.json.tpl", {
     aws_region           = data.aws_region.current.name
+    bugsnag_api_key      = var.bugsnag_api_key
     cloudwatch_log_group = "topshothawk-${terraform.workspace}"
     command              = var.command
     database_endpoint    = var.database_endpoint

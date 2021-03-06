@@ -24,6 +24,17 @@ resource "aws_ecr_repository" "consumer" {
   name = "topshothawk-${terraform.workspace}/consumer"
 }
 
+resource "aws_cloudwatch_log_group" "log_group" {
+  name              = "topshothawk-${terraform.workspace}"
+  retention_in_days = 1
+}
+
+module "bugsnag_api_key" {
+  source = "./modules/secret"
+
+  name = "topshothawk-${terraform.workspace}-bugsnag-api-key"
+}
+
 module "vpc" {
   source = "./modules/vpc"
 
@@ -36,11 +47,6 @@ module "bastion" {
   vpc_id        = module.vpc.id
   subnet_id     = module.vpc.public_subnets[0]
   key_pair_name = local.aws_key_pair_name
-}
-
-resource "aws_cloudwatch_log_group" "log_group" {
-  name              = "topshothawk-${terraform.workspace}"
-  retention_in_days = 1
 }
 
 resource "aws_ecs_cluster" "nexus" {
@@ -91,6 +97,7 @@ module "listener" {
   subnets              = module.vpc.private_subnets
   cloudwatch_log_group = aws_cloudwatch_log_group.log_group.name
 
+  bugsnag_api_key   = module.bugsnag_api_key.value
   database_endpoint = module.postgres.endpoint
   database_username = module.postgres.service_username
   database_password = module.postgres.service_password
@@ -117,6 +124,7 @@ module "fetchers" {
   subnets              = module.vpc.private_subnets
   cloudwatch_log_group = aws_cloudwatch_log_group.log_group.name
 
+  bugsnag_api_key   = module.bugsnag_api_key.value
   database_endpoint = module.postgres.endpoint
   database_username = module.postgres.service_username
   database_password = module.postgres.service_password
@@ -136,6 +144,7 @@ module "recorder" {
   subnets              = module.vpc.private_subnets
   cloudwatch_log_group = aws_cloudwatch_log_group.log_group.name
 
+  bugsnag_api_key   = module.bugsnag_api_key.value
   database_endpoint = module.postgres.endpoint
   database_username = module.postgres.service_username
   database_password = module.postgres.service_password

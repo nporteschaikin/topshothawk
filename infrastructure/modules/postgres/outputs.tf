@@ -11,6 +11,6 @@ output "service_username" {
 }
 
 output "service_password" {
-  value     = data.aws_secretsmanager_secret_version.service_password.secret_string
+  value     = module.service_password.value
   sensitive = true
 }

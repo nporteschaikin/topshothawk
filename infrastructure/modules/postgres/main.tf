@@ -7,22 +7,11 @@ resource "random_string" "master_password" {
   special = true
 }
 
-resource "aws_secretsmanager_secret" "master_password" {
-  name                    = "${var.name}-master-password"
-  recovery_window_in_days = 0
-}
+module "master_password" {
+  source = "./../secret"
 
-resource "aws_secretsmanager_secret_version" "master_password" {
-  secret_id     = aws_secretsmanager_secret.master_password.id
-  secret_string = random_string.master_password.result
-}
-
-data "aws_secretsmanager_secret" "master_password" {
-  arn = aws_secretsmanager_secret.master_password.arn
-}
-
-data "aws_secretsmanager_secret_version" "master_password" {
-  secret_id = data.aws_secretsmanager_secret.master_password.id
+  name  = "${var.name}-master-password"
+  value = random_string.master_password.result
 }
 
 resource "random_string" "service_password" {
@@ -30,22 +19,11 @@ resource "random_string" "service_password" {
   special = true
 }
 
-resource "aws_secretsmanager_secret" "service_password" {
-  name                    = "${var.name}-service-password"
-  recovery_window_in_days = 0
-}
+module "service_password" {
+  source = "./../secret"
 
-resource "aws_secretsmanager_secret_version" "service_password" {
-  secret_id     = aws_secretsmanager_secret.service_password.id
-  secret_string = random_string.service_password.result
-}
-
-data "aws_secretsmanager_secret" "service_password" {
-  arn = aws_secretsmanager_secret.service_password.arn
-}
-
-data "aws_secretsmanager_secret_version" "service_password" {
-  secret_id = data.aws_secretsmanager_secret.service_password.id
+  name  = "${var.name}-service-password"
+  value = random_string.master_password.result
 }
 
 resource "aws_security_group" "security_group" {
@@ -81,14 +59,9 @@ resource "aws_db_instance" "instance" {
   instance_class         = "db.t3.micro"
   name                   = "topshothawk"
   username               = local.master_username
-  password               = data.aws_secretsmanager_secret_version.master_password.secret_string
+  password               = module.master_password.value
   skip_final_snapshot    = true
   db_subnet_group_name   = aws_db_subnet_group.subnet_group.name
   vpc_security_group_ids = [aws_security_group.security_group.id]
   publicly_accessible    = false
-}
-
-resource "random_string" "access_password" {
-  length  = 16
-  special = true
 }

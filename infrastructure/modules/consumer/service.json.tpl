@@ -3,6 +3,10 @@
     "name": "${service_name}",
     "environment": [
       {
+        "name": "BUGSNAG_API_KEY",
+        "value": "${bugsnag_api_key}"
+      },
+      {
         "name": "DATABASE_URL",
         "value": "postgresql://${database_username}:${database_password}@${database_endpoint}/${database_name}"
       },
@@ -12,6 +16,10 @@
       },
       {
         "name": "LOG_QUEUE_POP",
+        "value": "true"
+      },
+      {
+        "name": "LOG_QUEUE_PUSH",
         "value": "true"
       },
       {

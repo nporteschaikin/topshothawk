@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const util = require('./../src/helpers/util');
+const Bugsnag = require('@bugsnag/js');
 
 // Temporary hack to silence warnings.
 const silenceDeprecation = function (fn) {
@@ -15,6 +16,9 @@ const silenceDeprecation = function (fn) {
 console.warn = silenceDeprecation(console.warn)
 console.error = silenceDeprecation(console.error)
 
+// set up bugsnag
+Bugsnag.start({ apiKey: process.env.BUGSNAG_API_KEY })
+
 const run = async function(fn, sleep) {
   let shutdown = false;
 
@@ -27,6 +31,7 @@ const run = async function(fn, sleep) {
     try {
       await fn();
     } catch (e) {
+      Bugsnag.notify(e)
       process.exit(1)
     }
 

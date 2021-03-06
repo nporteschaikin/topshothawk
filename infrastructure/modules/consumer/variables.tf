@@ -1,3 +1,4 @@
+variable "bugsnag_api_key" {}
 variable "command" {
   type = list(string)
 }

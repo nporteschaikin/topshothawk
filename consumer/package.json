@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@bugsnag/js": "^7.8.0",
     "@onflow/interaction": "0.0.11",
     "@onflow/sdk": "0.0.45-alpha.9",
     "@onflow/types": "0.0.4",
