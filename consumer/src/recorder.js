@@ -24,14 +24,14 @@ const upsertMoment = async function (moment) {
     .merge();
 };
 
-const handle = function (payload) {
-  upsertEvent({
+const handle = async function (payload) {
+  await upsertEvent({
     ...payload.event,
     blockId: payload.block.id,
   });
 
   if (payload.moment !== null) {
-    upsertMoment(payload.moment);
+    await upsertMoment(payload.moment);
   }
 };
 
@@ -40,7 +40,7 @@ module.exports = function () {
     const payload = await queue.pop(constants.EVENT_FETCHED_QUEUE);
 
     if (payload !== null) {
-      handle(payload);
+      await handle(payload);
     }
   };
 };
