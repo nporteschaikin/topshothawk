@@ -16,8 +16,13 @@ const buildPushHandler = function (queue, json, resolve) {
   };
 };
 
-const buildPopHandler = function (resultIndex, resolve) {
+const buildPopHandler = function (resultIndex, resolve, reject) {
   return function (err, result) {
+    if (err !== null) {
+      reject(err);
+      return;
+    }
+
     if (typeof result === "undefined") {
       resolve(null);
       return;
@@ -67,8 +72,8 @@ module.exports.uniquePush = async function (queue, payload) {
 };
 
 module.exports.uniquePop = async function (queue, payload) {
-  return new Promise(function (resolve) {
-    redis.zpopmin(queue, buildPopHandler(0, resolve));
+  return new Promise(function (resolve, reject) {
+    redis.zpopmin(queue, buildPopHandler(0, resolve, reject));
   });
 };
 
