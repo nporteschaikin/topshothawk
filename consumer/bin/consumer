@@ -31,6 +31,7 @@ const run = async function(fn, sleep = 0) {
     try {
       await fn();
     } catch (e) {
+      console.error(e)
       Bugsnag.notify(e)
       process.exit(1)
     }
