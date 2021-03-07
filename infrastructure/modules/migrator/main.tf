@@ -84,7 +84,7 @@ resource "aws_ecs_task_definition" "task_definition" {
 
 resource "aws_cloudwatch_event_rule" "event_rule" {
   name                = "topshothawk-${terraform.workspace}-${var.service_name}"
-  schedule_expression = "rate(5 minutes)"
+  schedule_expression = var.schedule_expression
 }
 
 resource "aws_cloudwatch_event_target" "scheduled_task" {

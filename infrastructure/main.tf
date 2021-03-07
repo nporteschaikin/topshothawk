@@ -70,7 +70,7 @@ module "postgres" {
   name            = "topshothawk-${terraform.workspace}-postgres"
   subnets         = module.vpc.private_subnets
   vpc_id          = module.vpc.id
-  security_groups = [module.listener.security_group_id, module.recorder.security_group_id, module.migrator.security_group_id, module.bastion.security_group_id]
+  security_groups = [module.recorder.security_group_id, module.migrator.security_group_id, module.bastion.security_group_id]
 }
 
 module "redis" {
@@ -155,8 +155,6 @@ module "recorder" {
   database_name     = module.postgres.database_name
   redis_endpoint    = module.redis.endpoint
 
-  desired_count = 2
-
   command = ["record"]
 }
 
@@ -169,6 +167,8 @@ module "migrator" {
   vpc_id               = module.vpc.id
   subnets              = module.vpc.private_subnets
   cloudwatch_log_group = aws_cloudwatch_log_group.log_group.name
+
+  schedule_expression = "rate(1 day)"
 
   database_endpoint = module.postgres.endpoint
   database_username = module.postgres.service_username
