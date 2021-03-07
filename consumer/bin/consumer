@@ -6,11 +6,11 @@ const Bugsnag = require('@bugsnag/js');
 // Temporary hack to silence warnings.
 const silenceDeprecation = function (fn) {
   return function (msg) {
-    if (msg.includes("Deprecation Notice")) {
+    if (typeof msg === "string" && msg.includes("Deprecation Notice")) {
       return;
     }
 
-    return fn(msg);
+    return fn.call(msg);
   }
 }
 console.warn = silenceDeprecation(console.warn)
