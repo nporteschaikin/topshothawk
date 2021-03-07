@@ -8,6 +8,7 @@ const momentTranslator = require("./translators/moment");
 const pg = require("knex")({
   client: "pg",
   connection: process.env.DATABASE_URL,
+  acquireConnectionTimeout: 2000,
 });
 
 const upsertEvent = async function (event) {
@@ -18,7 +19,8 @@ const upsertEvent = async function (event) {
   await pg(constants.EVENTS_TABLE)
     .insert(util.underscore(eventTranslator(event)))
     .onConflict(constants.EXTERNAL_TRANSACTION_ID_COLUMN)
-    .ignore();
+    .ignore()
+    .timeout(2000);
 };
 
 const upsertMoment = async function (moment) {
@@ -27,7 +29,8 @@ const upsertMoment = async function (moment) {
   await pg(constants.MOMENTS_TABLE)
     .insert(util.underscore(momentTranslator(moment)))
     .onConflict(constants.EXTERNAL_ID_COLUMN)
-    .merge();
+    .merge()
+    .timeout(2000);
 };
 
 const handle = async function (payload) {
