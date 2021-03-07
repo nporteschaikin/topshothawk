@@ -3,19 +3,6 @@
 const util = require('./../src/helpers/util');
 const Bugsnag = require('@bugsnag/js');
 
-// Temporary hack to silence warnings.
-const silenceDeprecation = function (fn) {
-  return function (msg) {
-    if (typeof msg === "string" && msg.includes("Deprecation Notice")) {
-      return;
-    }
-
-    return fn.apply(fn, arguments);
-  }
-}
-console.warn = silenceDeprecation(console.warn)
-console.error = silenceDeprecation(console.error)
-
 // set up bugsnag
 Bugsnag.start({ apiKey: process.env.BUGSNAG_API_KEY })
 
