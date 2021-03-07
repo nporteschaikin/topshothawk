@@ -39,7 +39,7 @@ const handle = async function (payload) {
     blockId: payload.block.id,
   });
 
-  if (payload.moment !== null) {
+  if (!!payload.moment) {
     await upsertMoment(payload.moment);
   }
 };
