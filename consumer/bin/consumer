@@ -10,7 +10,7 @@ const silenceDeprecation = function (fn) {
       return;
     }
 
-    return fn.call(msg);
+    return fn.apply(fn, arguments);
   }
 }
 console.warn = silenceDeprecation(console.warn)
