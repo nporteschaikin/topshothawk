@@ -47,9 +47,7 @@ def plot_moment_candle(data, moment_id, MA_col=None, moment_id_col='moment_id_')
                               go.Scatter(x=to_plot['date_'], y=to_plot[MA_col], line=dict(color='orange', width=1))])
     return fig
 
-    fig = plot_moment_candle(MA_data, '5e531f15-d573-4589-9c52-6778448cc105', MA_col='MA_Price_5')
-
-
+data = pd.read_csv(obj['Body'], nrows=10000)
 keep = ['moment_unique_id',
         'moment_id',
         'player_name',
@@ -61,7 +59,6 @@ keep = ['moment_unique_id',
         'price_USD',
         'play_category']
 
-data = pd.read_csv(obj['Body'], nrows=10000)
 df = data[keep]
 df['date'] = pd.to_datetime(df['transaction_timestamp']).dt.date.astype(str)
 cndl_data = data_prep_candlestick(df, 'Aaron Gordon')
