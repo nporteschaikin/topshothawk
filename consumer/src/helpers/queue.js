@@ -9,14 +9,16 @@ const formatJSON = function (json) {
 const buildPushHandler = function (queue, json, resolve) {
   return function () {
     if (process.env.LOG_QUEUE_PUSH) {
-      util.log.info(`Pushed message ${formatJSON(json)}... to queue ${queue}.`);
+      util.log.info(
+        `Pushed message \`${formatJSON(json)}\` to queue ${queue}.`
+      );
     }
 
     resolve();
   };
 };
 
-const buildPopHandler = function (resultIndex, resolve, reject) {
+const buildPopHandler = function (resultIndex, queue, resolve, reject) {
   return function (err, result) {
     if (err !== null) {
       reject(err);
@@ -36,7 +38,9 @@ const buildPopHandler = function (resultIndex, resolve, reject) {
     }
 
     if (process.env.LOG_QUEUE_POP) {
-      util.log.info(`Popped message ${formatJSON(json)}...`);
+      util.log.info(
+        `Popped message \`${formatJSON(json)}\` off ${queue} queue...`
+      );
     }
 
     resolve(JSON.parse(json));
@@ -53,7 +57,7 @@ module.exports.push = async function (queue, payload) {
 
 module.exports.pop = async function (queue) {
   return new Promise(function (resolve, reject) {
-    redis.brpop(queue, 0, buildPopHandler(1, resolve, reject));
+    redis.brpop(queue, 0, buildPopHandler(1, queue, resolve, reject));
   });
 };
 
@@ -73,7 +77,7 @@ module.exports.uniquePush = async function (queue, payload) {
 
 module.exports.uniquePop = async function (queue, payload) {
   return new Promise(function (resolve, reject) {
-    redis.zpopmin(queue, buildPopHandler(0, resolve, reject));
+    redis.zpopmin(queue, buildPopHandler(0, queue, resolve, reject));
   });
 };
 

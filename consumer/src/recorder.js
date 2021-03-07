@@ -11,13 +11,19 @@ const pg = require("knex")({
 });
 
 const upsertEvent = async function (event) {
-  const result = await pg(constants.EVENTS_TABLE)
+  util.log.info(
+    `Writing event with transaction ID ${event.transactionId} to Postgres...`
+  );
+
+  await pg(constants.EVENTS_TABLE)
     .insert(util.underscore(eventTranslator(event)))
     .onConflict(constants.EXTERNAL_TRANSACTION_ID_COLUMN)
     .ignore();
 };
 
 const upsertMoment = async function (moment) {
+  util.log.info(`Writing moment with ID ${moment.id} to Postgres...`);
+
   await pg(constants.MOMENTS_TABLE)
     .insert(util.underscore(momentTranslator(moment)))
     .onConflict(constants.EXTERNAL_ID_COLUMN)
